@@ -104,15 +104,7 @@ const Hero = () => {
           className="max-w-4xl mx-auto"
         >
           {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="inline-flex items-center px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-sm font-medium mb-8"
-          >
-            <div className="w-2 h-2 bg-primary-500 rounded-full mr-2 animate-pulse"></div>
-            We're Hiring - Join Our Team
-          </motion.div>
+          {/* Removed 'We're Hiring - Join Our Team' badge */}
 
           {/* Main Title */}
           <motion.h1
@@ -132,28 +124,12 @@ const Hero = () => {
             transition={{ delay: 0.5, duration: 0.8 }}
             className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed"
           >
-            Web, Mobile & AI Solutions for . Transform your ideas into powerful digital experiences.
+            Web, Mobile & AI Solutions for Businesses. Transform your ideas into powerful digital experiences.
           </motion.p>
 
           {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-            className="flex flex-wrap justify-center gap-8 mb-12"
-          >
-            {[
-              { number: '25+', label: 'Projects Delivered' },
-              { number: '15+', label: 'Happy Clients' },
-              { number: '3+', label: 'Years Experience' },
-            ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl font-bold text-primary-500 mb-1">{stat.number}</div>
-                <div className="text-gray-400 text-sm">{stat.label}</div>
-              </div>
-            ))}
-          </motion.div>
-
+          {/* Removed stats row (Projects Delivered, Happy Clients, Years Experience) */}
+          
           {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}

@@ -20,6 +20,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
     { name: 'About', href: '#about' },
     { name: 'Services', href: '#services' },
     { name: 'Portfolio', href: '#portfolio' },
+
     { name: 'Testimonials', href: '#testimonials' },
     { name: 'Contact', href: '#contact' },
   ];
@@ -50,7 +51,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             className="flex items-center space-x-2"
           >
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">A</span>
+              <span className="text-white font-bold text-lg">P</span>
             </div>
             <span className="text-xl font-bold gradient-text">ProDone</span>
           </motion.div>
@@ -70,23 +71,8 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             ))}
           </div>
 
-          {/* Dark Mode Toggle & Mobile Menu Button */}
+          {/* Mobile Menu Button Only (removed dark mode toggle) */}
           <div className="flex items-center space-x-4">
-            {/* Dark Mode Toggle */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-lg bg-dark-800/50 border border-dark-600 hover:border-primary-500 transition-all duration-300"
-            >
-              {darkMode ? (
-                <Sun className="w-5 h-5 text-yellow-400" />
-              ) : (
-                <Moon className="w-5 h-5 text-blue-400" />
-              )}
-            </motion.button>
-
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden p-2 rounded-lg bg-dark-800/50 border border-dark-600 hover:border-primary-500 transition-all duration-300"

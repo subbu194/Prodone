@@ -1,24 +1,20 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Phone, Mail, Calendar } from 'lucide-react';
+import { MessageCircle, X, Mail, Calendar } from 'lucide-react';
 
 const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const contactOptions = [
     {
-      icon: Phone,
-      label: 'Call Us',
-      action: () => window.open('tel:+15551234567', '_self'),
-      color: 'bg-green-500',
-      delay: 0.1,
-    },
-    {
       icon: Mail,
       label: 'Email Us',
-      action: () => window.open('mailto:hello@yourProDone.com', '_self'),
+      action: () => {
+        window.dispatchEvent(new Event('open-lead-magnet'));
+        setIsOpen(false);
+      },
       color: 'bg-blue-500',
-      delay: 0.2,
+      delay: 0.1,
     },
     {
       icon: Calendar,
@@ -31,7 +27,7 @@ const FloatingContact = () => {
         setIsOpen(false);
       },
       color: 'bg-purple-500',
-      delay: 0.3,
+      delay: 0.2,
     },
   ];
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { Users, Target, Zap, Award, CheckCircle, ArrowRight } from 'lucide-react';
+import { Users, Target, Zap, CheckCircle, ArrowRight } from 'lucide-react';
 
 const About = () => {
   const [ref, inView] = useInView({
@@ -31,9 +31,6 @@ const About = () => {
   ];
 
   const achievements = [
-    '25+ Successful Projects',
-    '15+ Happy Clients',
-    '3+ Years Experience',
     '24/7 Support',
     '99% Client Satisfaction',
     'Fastest Delivery Time',
@@ -47,7 +44,7 @@ const About = () => {
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-8"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -85,7 +82,7 @@ const About = () => {
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.7, duration: 0.8 }}
-          className="grid md:grid-cols-3 gap-8 mb-16"
+          className="grid md:grid-cols-3 gap-4 mb-6"
         >
           {coreValues.map((value, index) => (
             <motion.div
@@ -105,37 +102,12 @@ const About = () => {
         </motion.div>
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Column - Image/Illustration */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: 1.0, duration: 0.8 }}
-            className="relative"
-          >
-            <div className="relative bg-gradient-to-br from-primary-500/20 to-primary-600/20 rounded-2xl p-8">
-              <div className="aspect-square bg-dark-800/50 rounded-xl border border-dark-700 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-24 h-24 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Award className="w-12 h-12 text-primary-500" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-white mb-2">Award-Winning Team</h3>
-                  <p className="text-gray-400">Recognized for excellence in digital innovation</p>
-                </div>
-              </div>
-              
-              {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 w-20 h-20 bg-primary-500/10 rounded-full animate-float"></div>
-              <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-primary-500/20 rounded-full animate-float" style={{ animationDelay: '2s' }}></div>
-            </div>
-          </motion.div>
-
-          {/* Right Column - Content */}
+        <div className="flex justify-center">
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ delay: 1.2, duration: 0.8 }}
-            className="space-y-8"
+            className="space-y-8 max-w-xl text-center"
           >
             <div>
               <h3 className="text-2xl font-bold mb-4 text-white">
@@ -149,14 +121,14 @@ const About = () => {
             </div>
 
             {/* Achievements Grid */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 justify-items-center">
               {achievements.map((achievement, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={inView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ delay: 1.4 + index * 0.1, duration: 0.5 }}
-                  className="flex items-center space-x-3"
+                  className="flex items-center space-x-3 justify-center"
                 >
                   <CheckCircle className="w-5 h-5 text-primary-500 flex-shrink-0" />
                   <span className="text-gray-300 text-sm">{achievement}</span>
@@ -171,7 +143,7 @@ const About = () => {
               transition={{ delay: 1.6, duration: 0.8 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="btn-primary flex items-center space-x-2 group"
+              className="btn-primary flex items-center space-x-2 group mx-auto"
               onClick={() => {
                 const servicesSection = document.querySelector('#services');
                 if (servicesSection) {
@@ -186,30 +158,7 @@ const About = () => {
         </div>
 
         {/* Stats Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 1.8, duration: 0.8 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8"
-        >
-          {[
-            { number: '25+', label: 'Projects Completed' },
-            { number: '15+', label: 'Happy Clients' },
-            { number: '3+', label: 'Years Experience' },
-            { number: '99%', label: 'Client Satisfaction' },
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: 2.0 + index * 0.1, duration: 0.5 }}
-              className="text-center"
-            >
-              <div className="text-3xl md:text-4xl font-bold text-primary-500 mb-2">{stat.number}</div>
-              <div className="text-gray-400 text-sm">{stat.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Removed stats section (Projects Completed, Happy Clients, Years Experience, Client Satisfaction) */}
       </div>
     </section>
   );

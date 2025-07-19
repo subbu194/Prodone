@@ -1,247 +1,193 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { 
-  Globe, 
-  Smartphone, 
-  Brain, 
+import {
+  Globe,
+  Smartphone,
+  Brain,
   ArrowRight,
-  CheckCircle 
+  CheckCircle
 } from 'lucide-react';
 
+const SERVICES = [
+  {
+    icon: Globe,
+    title: 'Enterprise Web Solutions',
+    description: 'Custom, scalable web platforms for performance, security, and growth. Robust digital experiences to elevate your brand.',
+    features: [
+      'Custom Web Application Architecture',
+      'Enterprise-Grade Security & Compliance',
+      'API Ecosystem Design & Integration',
+      'Progressive Web Apps (PWA)',
+      'SEO & Accessibility Best Practices',
+      'Ongoing Support & Optimization'
+    ],
+  },
+  {
+    icon: Smartphone,
+    title: 'Mobile Product Engineering',
+    description: 'Premium mobile apps for iOS and Android, blending seamless UX with powerful native and cross-platform tech.',
+    features: [
+      'Native & Cross-Platform Development',
+      'App Store & Play Store Launch Strategy',
+      'UX/UI Design for Engagement & Retention',
+      'Real-Time Data Synchronization',
+      'Push Notifications & Deep Linking',
+      'Lifecycle Management & Analytics'
+    ],
+  },
+  {
+    icon: Brain,
+    title: 'AI & Automation Consulting',
+    description: 'Transform your business with intelligent automation and AI-driven solutions. Unlock new opportunities and efficiencies.',
+    features: [
+      'AI Strategy & Roadmapping',
+      'End-to-End AI Integration',
+      'Conversational AI & Chatbots',
+      'Predictive Analytics & Insights',
+      'Computer Vision & Image Processing',
+    ],
+  },
+];
+
+const TECHNOLOGIES = [
+  { name: 'React', icon: '⚛️' },
+  { name: 'React Native', icon: '📱' },
+  { name: 'MongoDB', icon: '🍃' },
+  { name: 'PostgreSQL', icon: '🐘' },
+  { name: 'AWS', icon: '☁️' },
+  { name: 'Docker', icon: '🐳' },
+];
+
+const PROCESS = [
+  { step: '01', title: 'Consult', description: 'We listen, understand your vision, and define clear goals.' },
+  { step: '02', title: 'Strategize', description: 'We architect a tailored plan and design the roadmap.' },
+  { step: '03', title: 'Build', description: 'Our experts develop, iterate, and test your solution.' },
+  { step: '04', title: 'Launch & Support', description: 'We deploy, monitor, and help you grow post-launch.' },
+];
+
 const Services = () => {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  const services = [
-    {
-      icon: Globe,
-      title: 'Web Development',
-      description: 'Modern, responsive websites and web applications built with cutting-edge technologies.',
-      features: [
-        'React & Next.js Development',
-        'E-commerce Solutions',
-        'Custom CMS Development',
-        'API Integration',
-        'Performance Optimization',
-        'SEO Optimization'
-      ],
-      color: 'from-blue-500 to-cyan-500',
-      bgColor: 'bg-blue-500/10',
-      borderColor: 'border-blue-500/20',
-    },
-    {
-      icon: Smartphone,
-      title: 'Mobile App Development',
-      description: 'Native and cross-platform mobile applications for iOS and Android platforms.',
-      features: [
-        'React Native Development',
-        'iOS & Android Apps',
-        'App Store Optimization',
-        'Push Notifications',
-        'Offline Functionality',
-        'App Maintenance'
-      ],
-      color: 'from-green-500 to-emerald-500',
-      bgColor: 'bg-green-500/10',
-      borderColor: 'border-green-500/20',
-    },
-    {
-      icon: Brain,
-      title: 'AI Integration',
-      description: 'Intelligent solutions powered by artificial intelligence and machine learning.',
-      features: [
-        'Chatbot Development',
-        'Predictive Analytics',
-        'Image Recognition',
-        'Natural Language Processing',
-        'Automation Solutions',
-        'AI Consulting'
-      ],
-      color: 'from-purple-500 to-pink-500',
-      bgColor: 'bg-purple-500/10',
-      borderColor: 'border-purple-500/20',
-    },
-  ];
-
-  const technologies = [
-    { name: 'React', icon: '⚛️' },
-    { name: 'Node.js', icon: '🟢' },
-    { name: 'Python', icon: '🐍' },
-    { name: 'MongoDB', icon: '🍃' },
-    { name: 'AWS', icon: '☁️' },
-    { name: 'Docker', icon: '🐳' },
-  ];
-
   return (
-    <section id="services" className="section-padding bg-dark-950">
+    <section id="services" className="section-padding bg-dark-950" data-testid="services-section">
       <div className="container-custom">
         {/* Header */}
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={inView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="inline-flex items-center px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-sm font-medium mb-6"
+        <div className="text-center mb-12">
+          <div
+            className="inline-flex items-center px-6 py-2 rounded-full bg-primary-600/10 border border-primary-500/30 text-primary-400 text-base font-semibold mb-6"
+            data-testid="services-header-badge"
           >
-            Our Services
-          </motion.div>
-          
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6"
+            What We Do Best
+          </div>
+          <h2
+            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 gradient-text"
+            data-testid="services-header-title"
           >
-            Services We <span className="gradient-text">Offer</span>
-          </motion.h2>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed"
+            Elevate Your Business <br className="hidden md:block" />
+            <span className="gradient-text">With Our Expertise</span>
+          </h2>
+          <p
+            className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed"
+            data-testid="services-header-desc"
           >
-            We provide comprehensive digital solutions tailored to your business needs. 
-            From web development to AI integration, we've got you covered.
-          </motion.p>
-        </motion.div>
+            Unlock growth with our full-spectrum digital services. From stunning web apps to intelligent automation, we craft solutions that drive results and delight users.
+          </p>
+        </div>
 
         {/* Services Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.7, duration: 0.8 }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
-        >
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.8 + index * 0.2, duration: 0.8 }}
-              className={`card ${service.bgColor} ${service.borderColor} hover-lift group relative overflow-hidden`}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" data-testid="services-grid">
+          {SERVICES.map((service, idx) => (
+            <div
+              key={service.title}
+              className={`relative rounded-xl border border-gray-700 bg-dark-900/80 flex flex-col h-full p-7 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-primary-500 group`}
+              data-testid={`service-card-${idx}`}
             >
-              {/* Background Gradient */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
-              
               {/* Icon */}
-              <div className={`w-16 h-16 bg-gradient-to-br ${service.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                <service.icon className="w-8 h-8 text-white" />
+              <div className={`w-14 h-14 bg-gray-800 rounded-lg flex items-center justify-center mb-5 transition-all duration-300 group-hover:bg-primary-500/20`}>
+                <service.icon className="w-8 h-8 text-white group-hover:text-primary-400 transition-colors duration-300" aria-label={`${service.title} icon`} />
               </div>
-
-              {/* Content */}
-              <h3 className="text-xl font-semibold mb-4 text-white">{service.title}</h3>
-              <p className="text-gray-400 leading-relaxed mb-6">{service.description}</p>
-
+              {/* Title */}
+              <h3 className="text-xl font-bold mb-2 text-white tracking-tight group-hover:text-primary-400 transition-colors duration-300" data-testid={`service-title-${idx}`}>{service.title}</h3>
+              {/* Description */}
+              <p className="text-gray-300 leading-relaxed mb-5 text-base" data-testid={`service-desc-${idx}`}>{service.description}</p>
               {/* Features */}
-              <div className="space-y-3 mb-6">
-                {service.features.slice(0, 3).map((feature, featureIndex) => (
-                  <div key={featureIndex} className="flex items-center space-x-3">
-                    <CheckCircle className="w-4 h-4 text-primary-500 flex-shrink-0" />
-                    <span className="text-gray-300 text-sm">{feature}</span>
-                  </div>
+              <ul className="space-y-2 mb-5" data-testid={`service-features-${idx}`}> 
+                {service.features.slice(0, 3).map((feature, fidx) => (
+                  <li key={fidx} className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-primary-400 flex-shrink-0" aria-hidden="true" />
+                    <span className="text-gray-200 text-sm">{feature}</span>
+                  </li>
                 ))}
-              </div>
-
+              </ul>
               {/* CTA Button */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="btn-secondary w-full flex items-center justify-center space-x-2 group"
+              <button
+                className="mt-auto w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold text-base bg-primary-500 text-white hover:bg-primary-600 hover:scale-105 active:scale-95 transition-all duration-200 shadow group-hover:shadow-lg"
+                data-testid={`service-cta-${idx}`}
                 onClick={() => {
-                  const contactSection = document.querySelector('#contact');
-                  if (contactSection) {
-                    contactSection.scrollIntoView({ behavior: 'smooth' });
-                  }
+                  window.dispatchEvent(new Event('open-lead-magnet'));
                 }}
+                aria-label={`Start your project with ${service.title}`}
               >
-                <span>Get Started</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </motion.button>
-            </motion.div>
+                <span>Start Your Project</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Technologies Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 1.4, duration: 0.8 }}
+        <div
           className="text-center"
+          data-testid="tech-stack-section"
         >
-          <h3 className="text-2xl font-bold mb-8 text-white">
-            Technologies We <span className="gradient-text">Use</span>
+          <h3 className="text-2xl sm:text-3xl font-bold mb-7 text-white">
+            <span className="gradient-text">Tech Stack</span> We Love
           </h3>
-          
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-6">
-            {technologies.map((tech, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={inView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: 1.6 + index * 0.1, duration: 0.5 }}
-                className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-dark-800/50 border border-dark-700 hover:border-primary-500/50 transition-all duration-300 group"
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-5">
+            {TECHNOLOGIES.map((tech, idx) => (
+              <div
+                key={tech.name}
+                className="flex flex-col items-center space-y-1.5 p-3 rounded-lg bg-dark-800/70 border border-dark-700 hover:border-primary-500/80 transition-all duration-300 group shadow hover:shadow-xl hover:-translate-y-1"
+                data-testid={`tech-card-${idx}`}
               >
-                <div className="text-2xl group-hover:scale-110 transition-transform duration-300">
+                <div className="text-2xl group-hover:scale-125 transition-transform duration-300" aria-label={`${tech.name} icon`}>
                   {tech.icon}
                 </div>
-                <span className="text-gray-300 text-sm font-medium">{tech.name}</span>
-              </motion.div>
+                <span className="text-gray-200 text-base font-medium">{tech.name}</span>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Process Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 1.8, duration: 0.8 }}
-          className="mt-20 bg-dark-800/30 rounded-2xl p-8 border border-dark-700"
+        <div
+          className="mt-14 bg-dark-800/60 rounded-2xl p-8 border border-dark-700 shadow-xl"
+          data-testid="workflow-section"
         >
-          <div className="text-center mb-12">
-            <h3 className="text-2xl font-bold mb-4 text-white">
-              Our <span className="gradient-text">Process</span>
+          <div className="text-center mb-10">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-3 text-white">
+              Our <span className="gradient-text">Workflow</span>
             </h3>
-            <p className="text-gray-300 max-w-2xl mx-auto">
-              We follow a proven methodology to ensure your project's success from concept to deployment.
+            <p className="text-gray-300 max-w-2xl mx-auto text-lg">
+              We guide you from idea to launch with a transparent, collaborative, and proven process.
             </p>
           </div>
-
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { step: '01', title: 'Discovery', description: 'Understanding your requirements and goals' },
-              { step: '02', title: 'Planning', description: 'Creating detailed project roadmap and architecture' },
-              { step: '03', title: 'Development', description: 'Building your solution with best practices' },
-              { step: '04', title: 'Launch', description: 'Deploying and maintaining your application' },
-            ].map((process, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 2.0 + index * 0.2, duration: 0.8 }}
-                className="text-center"
+          <div className="grid md:grid-cols-4 gap-7">
+            {PROCESS.map((process, idx) => (
+              <div
+                key={process.step}
+                className="text-center flex flex-col items-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                data-testid={`workflow-step-${idx}`}
               >
-                <div className="w-16 h-16 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary-500/30">
-                  <span className="text-primary-500 font-bold text-lg">{process.step}</span>
+                <div className="w-14 h-14 bg-primary-500/30 rounded-full flex items-center justify-center mb-4 border-2 border-primary-500/40 shadow transition-all duration-300 group-hover:bg-primary-500/50">
+                  <span className="text-primary-400 font-extrabold text-lg">{process.step}</span>
                 </div>
-                <h4 className="text-lg font-semibold mb-2 text-white">{process.title}</h4>
-                <p className="text-gray-400 text-sm">{process.description}</p>
-              </motion.div>
+                <h4 className="text-base font-bold mb-1 text-white">{process.title}</h4>
+                <p className="text-gray-300 text-sm">{process.description}</p>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
 };
 
-export default Services; 
+export default Services;

@@ -1,376 +1,116 @@
-const Appointment = require('../models/Appointment');
-const Contact = require('../models/Contact');
-const Reminder = require('../models/Reminder');
-const { validationResult } = require('express-validator');
-const sendEmail = require('../utils/emailService');
+const nodemailer = require('nodemailer');
 
-// @desc    Create new appointment
-// @route   POST /api/appointments
-// @access  Public
-const createAppointment = async (req, res) => {
+// Replace with your actual secret token
+const WEBHOOK_SECRET = process.env.CALENDLY_WEBHOOK_SECRET;
+
+exports.calendlyWebhook = async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Validation failed',
-        errors: errors.array()
-      });
+    // Secure the webhook
+    const token = req.headers['x-calendly-webhook-token'];
+    if (!token || token !== WEBHOOK_SECRET) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const {
-      name,
-      email,
-      phone,
-      scheduledDate,
-      duration,
-      meetingType,
-      platform,
-      notes,
-      timezone
-    } = req.body;
+    const event = req.body.event;
+    const payload = req.body.payload;
 
-    // Check for scheduling conflicts
-    const conflict = await Appointment.findOne({
-      scheduledDate: {
-        $gte: new Date(scheduledDate),
-        $lt: new Date(new Date(scheduledDate).getTime() + duration * 60000)
-      },
-      status: { $in: ['scheduled', 'confirmed'] }
-    });
+    if (event === 'invitee.created') {
+      // Defensive: check payload structure
+      if (!payload || !payload.invitee || !payload.event) {
+        console.error('Malformed Calendly payload:', req.body);
+        return res.status(400).json({ error: 'Malformed payload' });
+      }
 
-    if (conflict) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'This time slot is already booked. Please select another time.'
+      const invitee = payload.invitee;
+      const eventObj = payload.event;
+      const fullName = invitee.name;
+      const email = invitee.email;
+      const dateTime = new Date(eventObj.start_time);
+
+      // Find Google Meet link in location or conferencing
+      let meetLink = '';
+      if (eventObj.location && typeof eventObj.location === 'string' && eventObj.location.startsWith('https://meet.google.com')) {
+        meetLink = eventObj.location;
+      } else if (eventObj.conferencing && eventObj.conferencing.join_url) {
+        meetLink = eventObj.conferencing.join_url;
+      }
+
+      if (!email) {
+        console.error('No email found in invitee:', invitee);
+        return res.status(400).json({ error: 'No email found in invitee' });
+      }
+
+      if (!meetLink) {
+        console.warn('No Google Meet link found for event:', eventObj);
+      }
+
+      // Check for required email credentials
+      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.error('Missing EMAIL_USER or EMAIL_PASS in environment variables');
+        return res.status(500).json({ error: 'Email configuration error' });
+      }
+
+      // Use nodemailer with debug logging
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
       });
-    }
 
-    // Find or create contact
-    let contact = await Contact.findOne({ email });
-    if (!contact) {
-      contact = new Contact({
-        name,
-        email,
-        phone,
-        city: 'Not specified',
-        businessType: 'Not specified',
-        industry: 'Not specified',
-        stage: 'Not decided',
-        message: `Appointment booking for ${meetingType}`,
-        source: 'appointment_booking'
-      });
-      await contact.save();
-    }
+      // Verify transporter before sending
+      try {
+        await transporter.verify();
+      } catch (verifyErr) {
+        console.error('Nodemailer transporter verification failed:', verifyErr);
+        return res.status(500).json({ error: 'Email transporter verification failed' });
+      }
 
-    // Create appointment
-    const appointment = new Appointment({
-      contactId: contact._id,
-      name,
-      email,
-      phone,
-      scheduledDate,
-      duration,
-      meetingType,
-      platform,
-      notes,
-      timezone: timezone || 'UTC'
-    });
+      const mailOptions = {
+        from: `ProDone Team <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: `Your Meeting is Confirmed! 🎉`,
+        html: `
+          <div style="font-family: 'Segoe UI', Arial, sans-serif; background: #18181b; color: #fff; padding: 32px; border-radius: 18px; max-width: 480px; margin: 0 auto; box-shadow: 0 8px 32px 0 rgba(56,189,248,0.25);">
+            <div style="text-align:center; margin-bottom: 24px;">
+              <img src="https://i.imgur.com/1Q9Z1Zm.png" alt="ProDone Logo" style="width: 80px; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 2px 8px #38bdf8;" />
+              <h2 style="color: #38bdf8; font-size: 2rem; margin: 0;">Your Meeting is Confirmed!</h2>
+            </div>
+            <p style="font-size: 1.1rem;">Hi <b>${fullName}</b>,</p>
+            <p style="margin-bottom: 18px;">Thank you for booking a meeting with us. Here are your meeting details:</p>
+            <div style="background: #23232b; border-radius: 12px; padding: 18px 20px; margin-bottom: 18px;">
+              <p style="margin: 0 0 8px 0;"><b>Date & Time:</b> ${dateTime.toLocaleString()}</p>
+              <p style="margin: 0 0 8px 0;"><b>Meeting Link:</b></p>
+              <a href="${meetLink}" style="display:inline-block; background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%); color: #fff; font-weight: bold; padding: 14px 32px; border-radius: 12px; box-shadow: 0 4px 16px #38bdf8; text-decoration: none; font-size: 1.1rem; margin-top: 8px; margin-bottom: 8px; transition: transform 0.2s;">Join Google Meet</a>
+            </div>
+            <p style="margin-bottom: 0.5rem;">You will receive a reminder 30 minutes before the meeting.</p>
+            <p style="margin-bottom: 0.5rem;">If you have any questions, just reply to this email.</p>
+            <div style="margin-top: 32px; text-align: center;">
+              <span style="color: #38bdf8; font-weight: bold; font-size: 1.1rem;">Best regards,<br>ProDone Team</span>
+            </div>
+          </div>
+        `
+      };
 
-    await appointment.save();
-
-    // Create reminders
-    const reminderTimes = [
-      { type: 'email', hours: 24 }, // 24 hours before
-      { type: 'email', hours: 1 }   // 1 hour before
-    ];
-
-    for (const reminder of reminderTimes) {
-      const reminderDate = new Date(scheduledDate);
-      reminderDate.setHours(reminderDate.getHours() - reminder.hours);
-
-      if (reminderDate > new Date()) {
-        await Reminder.create({
-          appointmentId: appointment._id,
-          contactId: contact._id,
-          type: reminder.type,
-          scheduledFor: reminderDate,
-          message: `Reminder: Your ${meetingType} is scheduled for ${new Date(scheduledDate).toLocaleString()}`,
-          recipient: { email, phone }
-        });
+      try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent:', info.response || info);
+        return res.status(200).json({ success: true, emailSent: true });
+      } catch (mailErr) {
+        console.error('Error sending email:', mailErr);
+        return res.status(500).json({ error: 'Failed to send email' });
       }
     }
 
-    // Send confirmation email
-    const emailData = {
-      to: email,
-      subject: `Appointment Confirmed - ${meetingType}`,
-      html: `
-        <h2>Appointment Confirmed!</h2>
-        <p>Hi ${name},</p>
-        <p>Your appointment has been successfully scheduled.</p>
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3>Appointment Details:</h3>
-          <p><strong>Type:</strong> ${meetingType}</p>
-          <p><strong>Date & Time:</strong> ${new Date(scheduledDate).toLocaleString()}</p>
-          <p><strong>Duration:</strong> ${duration} minutes</p>
-          <p><strong>Platform:</strong> ${platform}</p>
-          ${appointment.meetingLink ? `<p><strong>Meeting Link:</strong> <a href="${appointment.meetingLink}">Join Meeting</a></p>` : ''}
-        </div>
-        <p>We'll send you a reminder 24 hours and 1 hour before the meeting.</p>
-        <p>If you need to reschedule, please contact us at least 24 hours in advance.</p>
-        <p>Best regards,<br>Your ProDone Team</p>
-      `
-    };
+    // No database action for canceled events
+    if (event === 'invitee.canceled') {
+      return res.status(200).json({ success: true });
+    }
 
-    sendEmail(emailData).catch(err => console.error('Confirmation email error:', err));
-
-    res.status(201).json({
-      status: 'success',
-      message: 'Appointment scheduled successfully!',
-      data: {
-        id: appointment._id,
-        scheduledDate: appointment.scheduledDate,
-        meetingType: appointment.meetingType
-      }
-    });
-
+    return res.status(200).json({ received: true });
   } catch (error) {
-    console.error('Create appointment error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Failed to schedule appointment'
-    });
+    console.error('Calendly Webhook Error:', error);
+    return res.status(500).json({ error: 'Webhook processing failed' });
   }
 };
-
-// @desc    Get all appointments
-// @route   GET /api/appointments
-// @access  Private
-const getAllAppointments = async (req, res) => {
-  try {
-    const { page = 1, limit = 10, status, date, search } = req.query;
-
-    const query = {};
-    if (status) query.status = status;
-    if (date) {
-      const startDate = new Date(date);
-      const endDate = new Date(date);
-      endDate.setDate(endDate.getDate() + 1);
-      query.scheduledDate = { $gte: startDate, $lt: endDate };
-    }
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { meetingType: { $regex: search, $options: 'i' } }
-      ];
-    }
-
-    const appointments = await Appointment.find(query)
-      .populate('contactId', 'name email phone')
-      .sort({ scheduledDate: 1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .exec();
-
-    const total = await Appointment.countDocuments(query);
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        appointments,
-        totalPages: Math.ceil(total / limit),
-        currentPage: page,
-        total
-      }
-    });
-
-  } catch (error) {
-    console.error('Get appointments error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Failed to fetch appointments'
-    });
-  }
-};
-
-// @desc    Update appointment
-// @route   PATCH /api/appointments/:id
-// @access  Private
-const updateAppointment = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = req.body;
-
-    const appointment = await Appointment.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    ).populate('contactId', 'name email phone');
-
-    if (!appointment) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Appointment not found'
-      });
-    }
-
-    // If date/time changed, update reminders
-    if (updateData.scheduledDate) {
-      await Reminder.deleteMany({ appointmentId: id });
-      
-      const reminderTimes = [
-        { type: 'email', hours: 24 },
-        { type: 'email', hours: 1 }
-      ];
-
-      for (const reminder of reminderTimes) {
-        const reminderDate = new Date(appointment.scheduledDate);
-        reminderDate.setHours(reminderDate.getHours() - reminder.hours);
-
-        if (reminderDate > new Date()) {
-          await Reminder.create({
-            appointmentId: appointment._id,
-            contactId: appointment.contactId._id,
-            type: reminder.type,
-            scheduledFor: reminderDate,
-            message: `Reminder: Your ${appointment.meetingType} is scheduled for ${appointment.scheduledDate.toLocaleString()}`,
-            recipient: { email: appointment.email, phone: appointment.phone }
-          });
-        }
-      }
-    }
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Appointment updated successfully',
-      data: appointment
-    });
-
-  } catch (error) {
-    console.error('Update appointment error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Failed to update appointment'
-    });
-  }
-};
-
-// @desc    Cancel appointment
-// @route   DELETE /api/appointments/:id
-// @access  Private
-const cancelAppointment = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const appointment = await Appointment.findByIdAndUpdate(
-      id,
-      { status: 'cancelled' },
-      { new: true }
-    ).populate('contactId', 'name email phone');
-
-    if (!appointment) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Appointment not found'
-      });
-    }
-
-    // Cancel all reminders
-    await Reminder.updateMany(
-      { appointmentId: id },
-      { status: 'cancelled' }
-    );
-
-    // Send cancellation email
-    const emailData = {
-      to: appointment.email,
-      subject: 'Appointment Cancelled',
-      html: `
-        <h2>Appointment Cancelled</h2>
-        <p>Hi ${appointment.name},</p>
-        <p>Your appointment scheduled for ${appointment.scheduledDate.toLocaleString()} has been cancelled.</p>
-        <p>If you'd like to reschedule, please book a new appointment through our website.</p>
-        <p>Best regards,<br>Your ProDone Team</p>
-      `
-    };
-
-    sendEmail(emailData).catch(err => console.error('Cancellation email error:', err));
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Appointment cancelled successfully',
-      data: appointment
-    });
-
-  } catch (error) {
-    console.error('Cancel appointment error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Failed to cancel appointment'
-    });
-  }
-};
-
-// @desc    Get appointment statistics
-// @route   GET /api/appointments/stats
-// @access  Private
-const getAppointmentStats = async (req, res) => {
-  try {
-    const today = new Date();
-    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
-    const stats = await Appointment.aggregate([
-      {
-        $facet: {
-          byStatus: [
-            { $group: { _id: '$status', count: { $sum: 1 } } }
-          ],
-          byType: [
-            { $group: { _id: '$meetingType', count: { $sum: 1 } } }
-          ],
-          today: [
-            { $match: { scheduledDate: { $gte: new Date().setHours(0, 0, 0, 0) } } },
-            { $count: 'count' }
-          ],
-          thisWeek: [
-            { $match: { scheduledDate: { $gte: startOfWeek } } },
-            { $count: 'count' }
-          ],
-          thisMonth: [
-            { $match: { scheduledDate: { $gte: startOfMonth } } },
-            { $count: 'count' }
-          ]
-        }
-      }
-    ]);
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        byStatus: stats[0].byStatus,
-        byType: stats[0].byType,
-        today: stats[0].today[0]?.count || 0,
-        thisWeek: stats[0].thisWeek[0]?.count || 0,
-        thisMonth: stats[0].thisMonth[0]?.count || 0
-      }
-    });
-
-  } catch (error) {
-    console.error('Get appointment stats error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Failed to fetch appointment statistics'
-    });
-  }
-};
-
-module.exports = {
-  createAppointment,
-  getAllAppointments,
-  updateAppointment,
-  cancelAppointment,
-  getAppointmentStats
-}; 

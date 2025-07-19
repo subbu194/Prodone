@@ -38,16 +38,16 @@ const Footer = () => {
     ],
   };
 
-  const socialLinks = [
-    { icon: Github, href: 'https://github.com', label: 'GitHub' },
-    { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-    { icon: Instagram, href: 'https://instagram.com', label: 'Instagram' },
-  ];
+  // const contactInfo = [
+  //   { icon: Mail, text: 'hello@yourProDone.com', href: 'mailto:hello@yourProDone.com' },
+  //   { icon: Phone, text: '+1 (555) 123-4567', href: 'tel:+15551234567' },
+  //   { icon: MapPin, text: '123 Tech Street, Digital City, DC 12345', href: '#' },
+  // ];
 
   const contactInfo = [
-    { icon: Mail, text: 'hello@yourProDone.com', href: 'mailto:hello@yourProDone.com' },
-    { icon: Phone, text: '+1 (555) 123-4567', href: 'tel:+15551234567' },
-    { icon: MapPin, text: '123 Tech Street, Digital City, DC 12345', href: '#' },
+    { icon: Mail, text: 'yourprodone@gmail.com', href: 'mailto:yourprodone@gmail.com' },
+    { icon: Phone, text: '+19 96636 14603', href: 'tel:+199663614603' },
+    { icon: MapPin, text: 'ProDone, Silicon Layout, Bengaluru Tech City', href: '#' },
   ];
 
   return (
@@ -58,7 +58,7 @@ const Footer = () => {
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-6">
               <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A</span>
+                <span className="text-white font-bold text-lg">P</span>
               </div>
               <span className="text-xl font-bold gradient-text">ProDone</span>
             </div>
@@ -66,23 +66,7 @@ const Footer = () => {
               We build cutting-edge digital solutions that help businesses thrive in the modern digital landscape.
             </p>
             
-            {/* Social Links */}
-            <div className="flex space-x-4">
-              {socialLinks.map((social, index) => (
-                <motion.a
-                  key={index}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 bg-dark-800 rounded-lg flex items-center justify-center hover:bg-primary-500/20 border border-dark-700 hover:border-primary-500/50 transition-all duration-300"
-                  aria-label={social.label}
-                >
-                  <social.icon className="w-5 h-5 text-gray-400 hover:text-primary-500 transition-colors duration-300" />
-                </motion.a>
-              ))}
-            </div>
+            {/* Social Links removed */}
           </div>
 
           {/* Company Links */}
@@ -145,7 +129,7 @@ const Footer = () => {
         <div className="border-t border-dark-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-400 text-sm">
-              © {currentYear} Your ProDone Name. All rights reserved.
+              © {currentYear} ProDone . All rights reserved.
             </p>
             
             <div className="flex items-center space-x-6">
